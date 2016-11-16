@@ -6,7 +6,7 @@ table td {
     text-align: center;
     cursor: pointer;
     border: 1px solid black;
-    color: black;
+    color: grey;
 }
 
 table td.c1 {
@@ -23,4 +23,8 @@ table.invert td.c1 {
 
 .flag {
     background-color: red;
+}
+
+.gamoover{
+    color: red;
 }

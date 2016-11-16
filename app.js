@@ -80,7 +80,6 @@
     }
 
 
-
     function showCellValue(cellRow, cellColumn) {
         var cell = $(table[0].rows[cellRow].cells[cellColumn]);
         if (cell.hasClass('c1')) {
@@ -94,6 +93,7 @@
             openCellsCounter++;
         }
         if (cell.hasClass('mine')) {
+            cell.addClass('gamoover');
             alert('Bomb is here. Game is over');
             location.reload();
 
@@ -167,7 +167,7 @@
         }
         if (minutes == 10) {
             document.getElementById("time").innerHTML = 'Time is over';
-        }else{
+        } else {
             document.getElementById("time").innerHTML = minutes + ':' + seconds;
         }
 
