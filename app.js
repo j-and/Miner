@@ -1,10 +1,10 @@
 (function a() {
 
-    $(init);
+    // $(init);
     var table;
     var cellIdArray = [];
     var randomArray;
-    var counter;
+    //var counter;
     var openCellsCounter = 0;
 
     function init() {
@@ -14,11 +14,9 @@
     }
 
     $(document).ready(function () {
-        document.oncontextmenu = function () {
-            return false;
-        };
-
-        $('td').bind('contextmenu', function () {
+        init();
+        table.on('contextmenu', 'td', function (event) {
+            event.preventDefault();
             setFlag(this.parentElement.rowIndex, this.cellIndex);
         });
     });
@@ -65,6 +63,7 @@
     }
 
     function fillFieldWithCounter() {
+        var counter = countMines(newId);
         var cell = $('#' + newId);
         if (!cell.hasClass('mine')) {
             countMines(newId);
@@ -88,10 +87,7 @@
         if (!cell.hasClass('flag')) {
             cell.addClass('c1');
         }
-
-        if (cell.html() != 0) {
-            openCellsCounter++;
-        }
+        openCellsCounter++;
         if (cell.hasClass('mine')) {
             cell.addClass('gamoover');
             alert('Bomb is here. Game is over');
@@ -103,7 +99,7 @@
             var rowEnd = (cellRow + 1) <= 8 ? (cellRow + 1) : cellRow;
             var colStart = (cellColumn - 1) >= 0 ? (cellColumn - 1) : 0;
             var colEnd = (cellColumn + 1) <= 8 ? (cellColumn + 1) : cellColumn;
-            openCellsCounter++;
+
             for (var row = rowStart; row <= rowEnd; row++) {
                 for (var column = colStart; column <= colEnd; column++) {
                     if (cellRow !== row || cellColumn !== column) {
