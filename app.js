@@ -37,7 +37,7 @@
         fillFieldWithMines();
         for (j = 0; j < 9; j++) {
             for (i = 0; i < 9; i++) {
-                newId = 'i' + i + 'j' + j;
+                var newId = 'i' + i + 'j' + j;
                 fillFieldWithCounter(newId);
             }
         }
@@ -54,19 +54,18 @@
             randomArray.push(cellIdArray[random]);
         }
         while (Object.keys(obj).length < 10);
-        for (var key in Object.keys(obj)) {
-            var cellBomb = $('#' + (Object.keys(obj))[key]);
+        for (var key in obj) {
+            var cellBomb = $('#' + key);
             cellBomb.html('b');
             cellBomb.addClass('mine');
         }
         return randomArray;
     }
 
-    function fillFieldWithCounter() {
-        var counter = countMines(newId);
+    function fillFieldWithCounter(newId) {
         var cell = $('#' + newId);
         if (!cell.hasClass('mine')) {
-            countMines(newId);
+            var counter = countMines(newId);
             cell.html(counter);
         }
     }
@@ -168,7 +167,7 @@
         }
 
         setTimeout(timer, 1000);
-        return duration = minutes + ':' + seconds;
+        //return duration = minutes + ':' + seconds;
     }
 
     function startTimer() {
