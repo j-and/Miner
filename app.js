@@ -113,9 +113,9 @@
     }
 
     function countMines(id) {
-        counter = 0;
-        cellColumn = Number(id.substr(1, 1));
-        cellRow = Number(id.substr(3, 1));
+        var counter = 0;
+        var cellColumn = Number(id.substr(1, 1));
+        var cellRow = Number(id.substr(3, 1));
         for (var j = cellRow - 1; j <= cellRow + 1; j++) {
             for (var i = cellColumn - 1; i <= cellColumn + 1; i++) {
                 var minesCount = $('#' + ('i' + i + 'j' + j));
@@ -144,6 +144,8 @@
             finishGame();
         }
     }
+
+    var start;
 
     function timer() {
         var now = new Date();
