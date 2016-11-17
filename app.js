@@ -1,20 +1,26 @@
-(function () {
+(function a() {
 
-    $(document).on("DOMContentLoaded", init, event);
+    // $(init);
     var table;
     var cellIdArray = [];
-    var counter;
+    var randomArray;
+    //var counter;
+    var openCellsCounter = 0;
 
     function init() {
         table = $('#table');
         showTable();
-
-        var button = $('#button');
-        button.on('click', switchTableColors);
-        $('table').on('dblclick', 'td', changeColor);
         $('table').on('click', 'td', onCellClick);
-
     }
+
+    $(document).ready(function () {
+        init();
+        table.on('contextmenu', 'td', function (event) {
+            event.preventDefault();
+            setFlag(this.parentElement.rowIndex, this.cellIndex);
+        });
+    });
+
 
     function showTable() {
         var cell;
@@ -24,16 +30,14 @@
                 cell = document.createElement('td');
                 row.appendChild(cell);
                 cell.id = 'i' + i + 'j' + j;
-                cell.setAttribute('id', cell.id);
-                id = cell.id;
-                cellIdArray.push(id);
+                cellIdArray.push(cell.id);
             }
             table.append(row);
         }
         fillFieldWithMines();
-        for (var j = 0; j < 9; j++) {
-            for (var i = 0; i < 9; i++) {
-                newId = 'i' + i + 'j' + j;
+        for (j = 0; j < 9; j++) {
+            for (i = 0; i < 9; i++) {
+                var newId = 'i' + i + 'j' + j;
                 fillFieldWithCounter(newId);
             }
         }
@@ -43,43 +47,53 @@
     function fillFieldWithMines() {
         var obj = {};
         var random;
-        var randomArray = [];
+        randomArray = [];
         do {
             random = Math.round(Math.random() * (cellIdArray.length - 1));
             obj[cellIdArray[random]] = true;
             randomArray.push(cellIdArray[random]);
         }
         while (Object.keys(obj).length < 10);
-        for (var i = 0; i < Object.keys(obj).length; i++) {
-            $('#' + Object.keys(obj)[i]).html('b');
-            $('#' + Object.keys(obj)[i]).addClass('mine');
+        for (var key in obj) {
+            var cellBomb = $('#' + key);
+            cellBomb.html('b');
+            cellBomb.addClass('mine');
         }
+        return randomArray;
     }
 
-    function fillFieldWithCounter() {
-        var minesCount;
-        if ($('#' + newId).hasClass('mine') == false) {
-            countMines(newId);
-            $('#' + newId).html(counter);
+    function fillFieldWithCounter(newId) {
+        var cell = $('#' + newId);
+        if (!cell.hasClass('mine')) {
+            var counter = countMines(newId);
+            cell.html(counter);
         }
     }
 
     function onCellClick() {
-        var cellColumn = ($(this)[0].cellIndex);
-        var cellRow = ($(this)[0].parentElement.rowIndex);
+        var cellColumn = this.cellIndex;
+        var cellRow = this.parentElement.rowIndex;
+        startTimer();
         showCellValue(cellRow, cellColumn);
     }
 
+
     function showCellValue(cellRow, cellColumn) {
-        var cell = table[0].rows[cellRow].cells[cellColumn];
-        if (cell.getAttribute('class') == 'c1') {
+        var cell = $(table[0].rows[cellRow].cells[cellColumn]);
+        if (cell.hasClass('c1')) {
             return;
         }
-        cell.setAttribute('class', 'c1');
-        if (cell.innerHTML == 'b') {
-            console.log('bomb');
+        if (!cell.hasClass('flag')) {
+            cell.addClass('c1');
         }
-        if (cell.innerHTML == 0) {
+        openCellsCounter++;
+        if (cell.hasClass('mine')) {
+            cell.addClass('gamoover');
+            alert('Bomb is here. Game is over');
+            location.reload();
+
+        }
+        if (cell.html() == 0) {
             var rowStart = (cellRow - 1) >= 0 ? (cellRow - 1) : 0;
             var rowEnd = (cellRow + 1) <= 8 ? (cellRow + 1) : cellRow;
             var colStart = (cellColumn - 1) >= 0 ? (cellColumn - 1) : 0;
@@ -87,14 +101,16 @@
 
             for (var row = rowStart; row <= rowEnd; row++) {
                 for (var column = colStart; column <= colEnd; column++) {
-                    if (!((cellRow == row) && (cellColumn == column))) {
+                    if (cellRow !== row || cellColumn !== column) {
                         showCellValue(row, column);
                     }
                 }
             }
         }
+        if (openCellsCounter == 71) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
+            finishGame();
+        }
     }
-
 
     function countMines(id) {
         counter = 0;
@@ -102,26 +118,68 @@
         cellRow = Number(id.substr(3, 1));
         for (var j = cellRow - 1; j <= cellRow + 1; j++) {
             for (var i = cellColumn - 1; i <= cellColumn + 1; i++) {
-                minesCount = $('#' + ('i' + i + 'j' + j))
-                if (minesCount) {
-                    if (minesCount.hasClass('mine')) {
-                        counter++;
-                    }
+                var minesCount = $('#' + ('i' + i + 'j' + j));
+                if (minesCount.hasClass('mine')) {
+                    counter++;
                 }
             }
         }
         return counter;
     }
 
-    function changeColor() {
-        var source = $(this);
-        source.toggleClass('c1');
+    function setFlag(rowIndex, cellIndex) {
+        var flagsCount = 0;
+        var cell = $(table[0].rows[rowIndex].cells[cellIndex]);
+        cell.toggleClass('flag');
+        for (var i = 0; i < randomArray.length; i++) {
+
+            if ($('#' + randomArray[i]).hasClass('flag')) {
+                flagsCount++;
+            }
+        }
+        if (flagsCount == 1) {
+            startTimer();
+        }
+        if (flagsCount == 10) {
+            finishGame();
+        }
     }
 
-    function switchTableColors() {
-        table.toggleClass('invert');
+    function timer() {
+        var now = new Date();
+        var minutes = now.getMinutes() - start.getMinutes();
+        var seconds = now.getSeconds() - start.getSeconds();
+        if (seconds < 0) {
+            seconds = seconds + 60;
+            minutes = now.getMinutes() - start.getMinutes() - 1;
+        }
+
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        if (minutes == 10) {
+            document.getElementById("time").innerHTML = 'Time is over';
+        } else {
+            document.getElementById("time").innerHTML = minutes + ':' + seconds;
+        }
+
+        setTimeout(timer, 1000);
+        //return duration = minutes + ':' + seconds;
     }
 
+    function startTimer() {
+        if (openCellsCounter == 0) {
+            start = new Date();
+            timer(start);
+        }
+    }
+
+    function finishGame() {
+        alert('Finished in ' + timer() + ' seconds');
+    }
 })
 ();
 
