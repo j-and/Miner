@@ -4,12 +4,15 @@
     var cellIdArray = [];
     var randomArray;
     var openCellsCounter = 0;
-
+    var timer;
 
     function init() {
         table = $('#table');
         showTable();
         $('table').on('click', 'td', onCellClick);
+        timer = new Timer({
+            elem: document.getElementById('time')
+        });
     }
 
     $(document).ready(function () {
@@ -72,12 +75,8 @@
     function onCellClick() {
         var cellColumn = this.cellIndex;
         var cellRow = this.parentElement.rowIndex;
-        //startTimer();
-        var start=new Date();
-
-        timer.start(start);
+        timer.start();
         showCellValue(cellRow, cellColumn);
-
     }
 
 
@@ -101,7 +100,6 @@
             var rowEnd = (cellRow + 1) <= 8 ? (cellRow + 1) : cellRow;
             var colStart = (cellColumn - 1) >= 0 ? (cellColumn - 1) : 0;
             var colEnd = (cellColumn + 1) <= 8 ? (cellColumn + 1) : cellColumn;
-
             for (var row = rowStart; row <= rowEnd; row++) {
                 for (var column = colStart; column <= colEnd; column++) {
                     if (cellRow !== row || cellColumn !== column) {
@@ -110,8 +108,7 @@
                 }
             }
         }
-        if (openCellsCounter ===71) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
-          // finishGame();
+        if (openCellsCounter === 71) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
             timer.stop();
         }
     }
@@ -131,68 +128,20 @@
         return counter;
     }
 
-    setFlag.count = 0;
-    function setFlag(rowIndex, cellIndex) {
+    var setFlagCount = true;
 
-        if (setFlag.count == 0) {
+    function setFlag(rowIndex, cellIndex) {
+        if (setFlagCount) {
             timer.start();
-           // startTimer();
         }
         var cell = $(table[0].rows[rowIndex].cells[cellIndex]);
         cell.toggleClass('flag');
         var flagsCount = table.find('td.mine.flag').length;
         if (flagsCount === 10) {
-           // finishGame();
             timer.stop();
         }
-        setFlag.count++;
+        setFlagCount = false;
     }
-
-    //var start;
-    //var gameFinished = false;
-
-    // function timer() {
-    //     var now = new Date();
-    //     var minutes = now.getMinutes() - start.getMinutes();
-    //     var seconds = now.getSeconds() - start.getSeconds();
-    //     if (seconds < 0) {
-    //         seconds = seconds + 60;
-    //         minutes = now.getMinutes() - start.getMinutes() - 1;
-    //     }
-    //
-    //     if (seconds < 10) {
-    //         seconds = "0" + seconds;
-    //     }
-    //     if (minutes < 10) {
-    //         minutes = "0" + minutes;
-    //     }
-    //     if (minutes == 10) {
-    //         document.getElementById("time").innerHTML = 'Time is over';
-    //     } else {
-    //
-    //         document.getElementById("time").innerHTML = minutes + ':' + seconds;
-    //     }
-    //     if (!gameFinished) {
-    //         setTimeout(timer, 1000);
-    //     }
-    //     return minutes + ':' + seconds;
-    // }
-
-    // function startTimer() {
-    //     if (openCellsCounter == 0) {
-    //         start = new Date();
-    //         timer(start);
-    //     }
-    // }
-
-    // function finishGame() {
-    //     gameFinished = true;
-    //     console.log('Finished in ' + timer() + ' seconds');
-    //     //document.getElementById("time").innerHTML = timer();
-    // }
-
-
-
 })
 ();
 
