@@ -5,11 +5,13 @@
     var randomArray;
     var openCellsCounter = 0;
 
+
     function init() {
         table = $('#table');
         showTable();
         $('table').on('click', 'td', onCellClick);
     }
+
     $(document).ready(function () {
         init();
         table.on('contextmenu', 'td', function (event) {
@@ -70,8 +72,12 @@
     function onCellClick() {
         var cellColumn = this.cellIndex;
         var cellRow = this.parentElement.rowIndex;
-        startTimer();
+        //startTimer();
+        var start=new Date();
+
+        timer.start(start);
         showCellValue(cellRow, cellColumn);
+
     }
 
 
@@ -104,8 +110,9 @@
                 }
             }
         }
-        if (openCellsCounter == 71) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
-            finishGame();
+        if (openCellsCounter ===71) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
+          // finishGame();
+            timer.stop();
         }
     }
 
@@ -123,63 +130,69 @@
         }
         return counter;
     }
-    setFlag.count=0;
+
+    setFlag.count = 0;
     function setFlag(rowIndex, cellIndex) {
-        var flagsCount = 0;
-        if(setFlag.count==1){
-            startTimer();
+
+        if (setFlag.count == 0) {
+            timer.start();
+           // startTimer();
         }
         var cell = $(table[0].rows[rowIndex].cells[cellIndex]);
         cell.toggleClass('flag');
-        for (var i = 0; i < randomArray.length; i++) {
-
-            if ($('#' + randomArray[i]).hasClass('flag')) {
-                flagsCount++;
-            }
+        var flagsCount = table.find('td.mine.flag').length;
+        if (flagsCount === 10) {
+           // finishGame();
+            timer.stop();
         }
-        if (flagsCount == 10) {
-            finishGame();
-        }
+        setFlag.count++;
     }
 
-finishGame.count=0;
-    function timer() {
-        var now = new Date();
-        var minutes = now.getMinutes() - start.getMinutes();
-        var seconds = now.getSeconds() - start.getSeconds();
-        if (seconds < 0) {
-            seconds = seconds + 60;
-            minutes = now.getMinutes() - start.getMinutes() - 1;
-        }
+    //var start;
+    //var gameFinished = false;
 
-        if (seconds < 10) {
-            seconds = "0" + seconds;
-        }
-        if (minutes < 10) {
-            minutes = "0" + minutes;
-        }
-        if (minutes == 10) {
-            document.getElementById("time").innerHTML = 'Time is over';
-        } else {
-           if(finishGame.count!==0){
-                document.getElementById("time").innerHTML = minutes + ':' + seconds;
-            }
-                    }
-        setTimeout(timer, 1000);
-        return minutes + ':' + seconds;
-    }
+    // function timer() {
+    //     var now = new Date();
+    //     var minutes = now.getMinutes() - start.getMinutes();
+    //     var seconds = now.getSeconds() - start.getSeconds();
+    //     if (seconds < 0) {
+    //         seconds = seconds + 60;
+    //         minutes = now.getMinutes() - start.getMinutes() - 1;
+    //     }
+    //
+    //     if (seconds < 10) {
+    //         seconds = "0" + seconds;
+    //     }
+    //     if (minutes < 10) {
+    //         minutes = "0" + minutes;
+    //     }
+    //     if (minutes == 10) {
+    //         document.getElementById("time").innerHTML = 'Time is over';
+    //     } else {
+    //
+    //         document.getElementById("time").innerHTML = minutes + ':' + seconds;
+    //     }
+    //     if (!gameFinished) {
+    //         setTimeout(timer, 1000);
+    //     }
+    //     return minutes + ':' + seconds;
+    // }
 
-    function startTimer() {
-        if (openCellsCounter == 0) {
-            start = new Date();
-            timer(start);
-        }
-    }
+    // function startTimer() {
+    //     if (openCellsCounter == 0) {
+    //         start = new Date();
+    //         timer(start);
+    //     }
+    // }
 
-    function finishGame() {
-        console.log('Finished in ' + timer() + ' seconds');
-        document.getElementById("time").innerHTML = timer();
-    }
+    // function finishGame() {
+    //     gameFinished = true;
+    //     console.log('Finished in ' + timer() + ' seconds');
+    //     //document.getElementById("time").innerHTML = timer();
+    // }
+
+
+
 })
 ();
 
