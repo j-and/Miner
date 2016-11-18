@@ -167,7 +167,7 @@
         }
 
         setTimeout(timer, 1000);
-        //return duration = minutes + ':' + seconds;
+       return minutes + ':' + seconds;
     }
 
     function startTimer() {
