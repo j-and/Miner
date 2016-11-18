@@ -1,10 +1,8 @@
 (function a() {
 
-    // $(init);
     var table;
     var cellIdArray = [];
     var randomArray;
-    //var counter;
     var openCellsCounter = 0;
 
     function init() {
@@ -12,7 +10,6 @@
         showTable();
         $('table').on('click', 'td', onCellClick);
     }
-
     $(document).ready(function () {
         init();
         table.on('contextmenu', 'td', function (event) {
@@ -126,9 +123,12 @@
         }
         return counter;
     }
-
+    setFlag.count=0;
     function setFlag(rowIndex, cellIndex) {
         var flagsCount = 0;
+        if(setFlag.count==1){
+            startTimer();
+        }
         var cell = $(table[0].rows[rowIndex].cells[cellIndex]);
         cell.toggleClass('flag');
         for (var i = 0; i < randomArray.length; i++) {
@@ -137,16 +137,12 @@
                 flagsCount++;
             }
         }
-        if (flagsCount == 1) {
-            startTimer();
-        }
         if (flagsCount == 10) {
             finishGame();
         }
     }
 
-    var start;
-
+finishGame.count=0;
     function timer() {
         var now = new Date();
         var minutes = now.getMinutes() - start.getMinutes();
@@ -165,11 +161,12 @@
         if (minutes == 10) {
             document.getElementById("time").innerHTML = 'Time is over';
         } else {
-            document.getElementById("time").innerHTML = minutes + ':' + seconds;
-        }
-
+           if(finishGame.count!==0){
+                document.getElementById("time").innerHTML = minutes + ':' + seconds;
+            }
+                    }
         setTimeout(timer, 1000);
-        //return duration = minutes + ':' + seconds;
+        return minutes + ':' + seconds;
     }
 
     function startTimer() {
@@ -180,7 +177,8 @@
     }
 
     function finishGame() {
-        alert('Finished in ' + timer() + ' seconds');
+        console.log('Finished in ' + timer() + ' seconds');
+        document.getElementById("time").innerHTML = timer();
     }
 })
 ();
