@@ -29,6 +29,7 @@ function Timer(options) {
     this.stop = function () {
         clearInterval(timer);
         start = null;
+        return elem.innerHTML;
     };
 
     this.start = function () {

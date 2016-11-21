@@ -5,9 +5,11 @@
     var randomArray;
     var openCellsCounter = 0;
     var timer;
+    var btn;
 
     function init() {
         table = $('#table');
+        btn = $("#myBtn");
         showTable();
         $('table').on('click', 'td', onCellClick);
         timer = new Timer({
@@ -79,7 +81,6 @@
         showCellValue(cellRow, cellColumn);
     }
 
-
     function showCellValue(cellRow, cellColumn) {
         var cell = $(table[0].rows[cellRow].cells[cellColumn]);
         if (cell.hasClass('c1')) {
@@ -91,9 +92,12 @@
         openCellsCounter++;
         if (cell.hasClass('mine')) {
             cell.addClass('gamoover');
-            alert('Bomb is here. Game is over');
-            location.reload();
-
+            var message = 'Bomb is here. Game is over';
+            Modal.show(message
+                , function () {
+                    location.reload();
+                }
+            );
         }
         if (cell.html() == 0) {
             var rowStart = (cellRow - 1) >= 0 ? (cellRow - 1) : 0;
@@ -108,8 +112,12 @@
                 }
             }
         }
-        if (openCellsCounter === 71) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
-            timer.stop();
+        if (openCellsCounter === 5) {//71 -field 9x9 contains 81cells & 10mines; => emptyCells=81-10=71;
+            var duration = timer.stop();
+            message = 'The game is finished in ' + duration;
+            Modal.show(message, function () {
+                location.reload();
+            });
         }
     }
 
@@ -137,8 +145,12 @@
         var cell = $(table[0].rows[rowIndex].cells[cellIndex]);
         cell.toggleClass('flag');
         var flagsCount = table.find('td.mine.flag').length;
-        if (flagsCount === 10) {
-            timer.stop();
+        if (flagsCount === 3) {
+            var duration = timer.stop();
+            var message = 'The game is finished in ' + duration;
+            Modal.show(message, function () {
+                location.reload();
+            });
         }
         setFlagCount = false;
     }
